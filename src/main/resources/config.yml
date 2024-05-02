@@ -1,0 +1,13 @@
+database:
+  host: "localhost"
+  port: 3306
+  database: "blorastorage"
+  username: "blorastorage"
+  password: "password"
+storage:
+  gui:
+    title: '<color:#181825><bold>个人存储</bold></color>'
+    rows: 6  # 添加这一行来定义存储界面的行数，默认为6
+  takeoutOnly: false  # false代表允许放入和取出，true代表只允许取出，不允许放入
+messages:
+  reload: '<color:#a6e3a1><bold>BloraStorage 已重载！</bold></color>'
