@@ -16,3 +16,4 @@ storage:
 messages:
   noPermission: '&x&f&3&8&b&a&8你没有权限执行此命令！'
   reload: '&x&a&6&e&3&a&1BloraStorage 已重载！'
+  againstTakeoutOnly: '&x&a&6&e&3&a&1你不能将物品放入存储界面！'

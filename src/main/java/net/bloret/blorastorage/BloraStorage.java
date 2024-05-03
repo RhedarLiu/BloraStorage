@@ -55,5 +55,7 @@ public final class BloraStorage extends JavaPlugin {
         Commands.setReloadMsg(reloadMsg);
         String noPermissionMsg = config.getString("messages.noPermission", "&x&f&3&8&b&a&8你没有权限执行此命令！");
         Commands.setNoPermissionMsg(noPermissionMsg);
+        String againstTakeoutOnlyMsg = config.getString("messages.againstTakeoutOnly", "&x&a&6&e&3&a&1你不能将物品放入存储界面！");
+        StorageGUI.setAgainstTakeoutOnlyMsg(againstTakeoutOnlyMsg);
     }
 }
