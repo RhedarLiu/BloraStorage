@@ -33,22 +33,27 @@ public final class BloraStorage extends JavaPlugin {
 
         // 从config.yml读取数据库配置
         FileConfiguration config = this.getConfig();
+
+        // 数据库相关配置
         String host = config.getString("database.host");
         int port = config.getInt("database.port");
         String database = config.getString("database.database");
         String username = config.getString("database.username");
         String password = config.getString("database.password");
-        int storageRows = config.getInt("storage.gui.rows", 6);
-        String reloadMsg = config.getString("messages.reload", "&aBloraStorage 已重载");
-        Commands.setReloadMsg(reloadMsg);
-        // 初始化数据库
         DatabaseHandler.initializeDatabase(host, port, database, username, password);
 
-        // 获取并设置存储 GUI 标题和只取出模式
-        String guiTitle = config.getString("storage.gui.title", "&aYour Personal Storage");
+        // 存储箱相关配置
+        int storageRows = config.getInt("storage.gui.rows", 6);
+        String guiTitle = config.getString("storage.gui.title", "&x&1&8&1&8&2&5&l云端存储");
         boolean takeoutOnly = config.getBoolean("storage.takeoutOnly", false);
         StorageGUI.setupGuiTitle(guiTitle);
         StorageGUI.setTakeoutOnly(takeoutOnly);
         StorageGUI.setStorageRows(storageRows);
+
+        // 消息相关配置
+        String reloadMsg = config.getString("messages.reload", "&x&a&6&e&3&a&1BloraStorage 已重载！");
+        Commands.setReloadMsg(reloadMsg);
+        String noPermissionMsg = config.getString("messages.noPermission", "&x&f&3&8&b&a&8你没有权限执行此命令！");
+        Commands.setNoPermissionMsg(noPermissionMsg);
     }
 }

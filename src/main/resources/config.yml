@@ -1,4 +1,5 @@
 database:
+  # 配置数据库连接
   host: "localhost"
   port: 3306
   database: "blorastorage"
@@ -6,8 +7,12 @@ database:
   password: "password"
 storage:
   gui:
-    title: '<color:#181825><bold>个人存储</bold></color>'
-    rows: 6  # 添加这一行来定义存储界面的行数，默认为6
-  takeoutOnly: false  # false代表允许放入和取出，true代表只允许取出，不允许放入
+    title: '&x&1&8&1&8&2&5&l云端存储'
+    # 配置存储界面的标题
+    rows: 6
+    # 存储界面的行数，默认为6行，也就是最大54格
+  takeoutOnly: false
+  # false代表允许放入和取出，true代表只允许取出，不允许放入
 messages:
-  reload: '<color:#a6e3a1><bold>BloraStorage 已重载！</bold></color>'
+  noPermission: '&x&f&3&8&b&a&8你没有权限执行此命令！'
+  reload: '&x&a&6&e&3&a&1BloraStorage 已重载！'

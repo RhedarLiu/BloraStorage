@@ -13,6 +13,7 @@ import java.util.List;
 public class Commands implements CommandExecutor, TabCompleter {
     private final BloraStorage plugin;
     private static String reloadMsg;
+    private static String noPermissionMsg;
 
     public Commands(BloraStorage plugin) {
         this.plugin = plugin;
@@ -20,6 +21,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 
     public static void setReloadMsg(String msg) {
         reloadMsg = ChatColor.translateAlternateColorCodes('&', msg);
+    }
+
+    public static void setNoPermissionMsg(String msg) {
+        noPermissionMsg = ChatColor.translateAlternateColorCodes('&', msg);
     }
 
     @Override
@@ -31,7 +36,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 Player player = (Player) sender;
-                StorageGUI.openPlayerStorage(player); // 打开存储GUI
+                StorageGUI.openPlayerStorage(player);
                 return true;
             } else if (args[0].equalsIgnoreCase("reload")) {
                 if (sender.hasPermission("blorastorage.reload")) {
@@ -40,7 +45,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     sender.sendMessage(reloadMsg);
                     return true;
                 } else {
-                    sender.sendMessage("You do not have permission to use this command.");
+                    sender.sendMessage(noPermissionMsg);
                     return true;
                 }
             }

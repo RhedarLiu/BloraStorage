@@ -16,7 +16,6 @@ import org.bukkit.ChatColor;
 public class DatabaseHandler {
     private static Connection connection;
 
-    // 初始化数据库连接
     public static void initializeDatabase(String host, int port, String database, String username, String password) {
         try {
             if (connection != null && !connection.isClosed()) {
@@ -24,17 +23,17 @@ public class DatabaseHandler {
             }
             String url = String.format("jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC", host, port, database);
             connection = DriverManager.getConnection(url, username, password);
-            connection.setAutoCommit(false); // Prepare for transaction management
+            connection.setAutoCommit(false);
 
             // 创建表结构
             createTables();
-            connection.commit(); // Commit the table creation as a transaction
+            connection.commit();
         } catch (SQLException e) {
             handleSQLException(e);
         }
     }
 
-    // 创建数据库表结构
+    // 初始创建数据库表结构
     private static void createTables() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS player_storage (" +
                 "player_id VARCHAR(36) NOT NULL," +
@@ -48,7 +47,6 @@ public class DatabaseHandler {
         }
     }
 
-    // 关闭数据库连接
     public static void closeConnection() {
         if (connection != null) {
             try {
@@ -59,7 +57,6 @@ public class DatabaseHandler {
         }
     }
 
-    // 保存玩家物品到数据库
     public static void saveItems(Player player, Inventory inventory) {
         String sqlReplace = "REPLACE INTO player_storage (player_id, slot, material, amount) VALUES (?, ?, ?, ?)";
         String sqlDelete = "DELETE FROM player_storage WHERE player_id = ? AND slot = ?";
@@ -81,21 +78,19 @@ public class DatabaseHandler {
             }
             psReplace.executeBatch();
             psDelete.executeBatch();
-            connection.commit(); // Commit both sets of operations as a single transaction
+            connection.commit();
         } catch (SQLException e) {
             rollbackTransaction();
             handleSQLException(e);
         }
     }
 
-    // 删除数据库中玩家存储的物品，这些物品不在提供的存储界面中
+    // 删除数据库中不在存储界面中的物品
     public static void removeItemsNotInInventory(Player player, Inventory inventory) {
         String sqlDelete = "DELETE FROM player_storage WHERE player_id = ? AND slot = ?";
         try (PreparedStatement psDelete = connection.prepareStatement(sqlDelete)) {
-            // 获取所有可能的槽位
             for (int i = 0; i < StorageGUI.getStorageRows() * 9; i++) {
                 ItemStack item = inventory.getItem(i);
-                // 如果槽位为空或物品类型为空气，则删除对应的数据库记录
                 if (item == null || item.getType() == Material.AIR) {
                     psDelete.setString(1, player.getUniqueId().toString());
                     psDelete.setInt(2, i);
@@ -103,7 +98,7 @@ public class DatabaseHandler {
                 }
             }
             psDelete.executeBatch();
-            connection.commit(); // Commit the delete operation as a transaction
+            connection.commit();
         } catch (SQLException e) {
             rollbackTransaction();
             handleSQLException(e);
@@ -133,22 +128,19 @@ public class DatabaseHandler {
         return inventory;
     }
 
-    // 回滚数据库事务
     private static void rollbackTransaction() {
         try {
             if (connection != null) {
                 connection.rollback();
             }
         } catch (SQLException e) {
-            // If rollback fails, log the exception, but do not throw it to avoid masking the original exception
             e.printStackTrace();
         }
     }
 
     // 处理 SQLException
     private static void handleSQLException(SQLException e) {
-        e.printStackTrace(); // Print stack trace or log it
+        e.printStackTrace();
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Database error: " + e.getMessage());
-        // If you have a logging system, you should log the exception here
     }
 }

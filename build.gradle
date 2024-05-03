@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'net.bloret'
-version = 'R1.9.2'
+version = 'R1.9.3'
 
 repositories {
     mavenCentral()
