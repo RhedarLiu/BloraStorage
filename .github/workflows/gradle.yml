@@ -40,5 +40,7 @@ jobs:
         with:
           title: "BloraStorage"
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest" # 或者使用其他你想要的标签名称
           files: "./build/libs/BloraStorage-*.jar"
           prerelease: false
+
