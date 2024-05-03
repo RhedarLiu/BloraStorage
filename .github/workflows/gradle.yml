@@ -39,8 +39,8 @@ jobs:
         uses: marvinpinto/action-automatic-releases@master
         with:
           title: "BloraStorage"
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest" # 或者使用其他你想要的标签名称
+          repo_token: "${{ secrets.ACCESS_TOKEN }}"
+          automatic_release_tag: "latest"
           files: "./build/libs/BloraStorage-*.jar"
           prerelease: false
 
