@@ -1,17 +1,25 @@
 package net.bloret.blorastorage;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import java.util.Base64;
 
 public class DatabaseHandler {
     private static Connection connection;
@@ -25,25 +33,26 @@ public class DatabaseHandler {
             connection = DriverManager.getConnection(url, username, password);
             connection.setAutoCommit(false);
 
-            // 创建表结构
-            createTables();
+            // 创建表结构或更新数据库结构
+            createOrUpdateTables();
             connection.commit();
         } catch (SQLException e) {
             handleSQLException(e);
         }
     }
 
-    // 初始创建数据库表结构
-    private static void createTables() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS player_storage (" +
+    // 创建或更新数据库表结构
+    private static void createOrUpdateTables() throws SQLException {
+        String sqlPlayerStorage = "CREATE TABLE IF NOT EXISTS player_storage (" +
                 "player_id VARCHAR(36) NOT NULL," +
                 "slot INT NOT NULL," +
                 "material VARCHAR(255) NOT NULL," +
                 "amount INT NOT NULL," +
+                "item_meta TEXT," +
                 "PRIMARY KEY (player_id, slot)" +
                 ");";
         try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+            statement.executeUpdate(sqlPlayerStorage);
         }
     }
 
@@ -58,7 +67,7 @@ public class DatabaseHandler {
     }
 
     public static void saveItems(Player player, Inventory inventory) {
-        String sqlReplace = "REPLACE INTO player_storage (player_id, slot, material, amount) VALUES (?, ?, ?, ?)";
+        String sqlReplace = "REPLACE INTO player_storage (player_id, slot, material, amount, item_meta) VALUES (?, ?, ?, ?, ?)";
         String sqlDelete = "DELETE FROM player_storage WHERE player_id = ? AND slot = ?";
         try (PreparedStatement psReplace = connection.prepareStatement(sqlReplace);
              PreparedStatement psDelete = connection.prepareStatement(sqlDelete)) {
@@ -69,6 +78,7 @@ public class DatabaseHandler {
                     psReplace.setInt(2, i);
                     psReplace.setString(3, item.getType().name());
                     psReplace.setInt(4, item.getAmount());
+                    psReplace.setString(5, itemStackToBase64(item));
                     psReplace.addBatch();
                 } else {
                     psDelete.setString(1, player.getUniqueId().toString());
@@ -85,7 +95,6 @@ public class DatabaseHandler {
         }
     }
 
-    // 删除数据库中不在存储界面中的物品
     public static void removeItemsNotInInventory(Player player, Inventory inventory) {
         String sqlDelete = "DELETE FROM player_storage WHERE player_id = ? AND slot = ?";
         try (PreparedStatement psDelete = connection.prepareStatement(sqlDelete)) {
@@ -105,10 +114,9 @@ public class DatabaseHandler {
         }
     }
 
-    // 从数据库加载玩家物品
     public static Inventory loadItems(Player player) {
         Inventory inventory = Bukkit.createInventory(player, StorageGUI.getStorageRows() * 9, StorageGUI.getGuiTitle());
-        String sql = "SELECT slot, material, amount FROM player_storage WHERE player_id = ?";
+        String sql = "SELECT slot, material, amount, item_meta FROM player_storage WHERE player_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, player.getUniqueId().toString());
             try (ResultSet rs = ps.executeQuery()) {
@@ -116,16 +124,31 @@ public class DatabaseHandler {
                     int slot = rs.getInt("slot");
                     Material material = Material.getMaterial(rs.getString("material"));
                     int amount = rs.getInt("amount");
+                    String itemMetaBase64 = rs.getString("item_meta");
                     if (material != null) {
-                        ItemStack item = new ItemStack(material, amount);
-                        inventory.setItem(slot, item);
+                        ItemStack item = itemStackFromBase64(itemMetaBase64);
+                        if (item != null) {
+                            item.setAmount(amount);
+                            inventory.setItem(slot, item);
+                        }
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             handleSQLException(e);
         }
         return inventory;
+    }
+
+    public static void updateDatabaseStructure() {
+        try (Statement statement = connection.createStatement()) {
+            // 添加 item_meta 字段到 player_storage 表中
+            String sql = "ALTER TABLE player_storage ADD COLUMN item_meta TEXT AFTER amount";
+            statement.executeUpdate(sql);
+            connection.commit();
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
     }
 
     private static void rollbackTransaction() {
@@ -138,9 +161,31 @@ public class DatabaseHandler {
         }
     }
 
-    // 处理 SQLException
-    private static void handleSQLException(SQLException e) {
+    private static void handleSQLException(Exception e) {
         e.printStackTrace();
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Database error: " + e.getMessage());
+    }
+
+    public static String itemStackToBase64(ItemStack item) throws IllegalStateException {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try (BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
+                dataOutput.writeObject(item);
+            }
+            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to save item stack.", e);
+        }
+    }
+
+    public static ItemStack itemStackFromBase64(String data) throws IOException {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));
+            try (BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
+                return (ItemStack) dataInput.readObject();
+            }
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Unable to decode class type.", e);
+        }
     }
 }

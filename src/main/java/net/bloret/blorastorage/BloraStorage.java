@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public final class BloraStorage extends JavaPlugin {
     private static BloraStorage instance;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -15,6 +16,9 @@ public final class BloraStorage extends JavaPlugin {
         // 设置命令相关
         this.getCommand("blorastorage").setExecutor(new Commands(this));
         this.getCommand("blorastorage").setTabCompleter(new Commands(this));
+
+        // 确保数据库结构是最新的
+        DatabaseHandler.updateDatabaseStructure();
     }
 
     @Override
