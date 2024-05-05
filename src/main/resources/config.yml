@@ -1,19 +1,23 @@
 database:
-  # 配置数据库连接
+  # 配置数据库连接，目前仅支持 MySQL 和 MariaDB，其他数据库尚无计划支持
   host: "localhost"
   port: 3306
   database: "blorastorage"
   username: "blorastorage"
   password: "password"
+# 消息请使用 MiniMessage 格式，以更方便地配置更多颜色和格式的信息
+# MiniMessage 官方 Wiki：https://docs.advntr.dev/minimessage/format.html
+# MiniMessage 格式官方生成器：https://webui.advntr.dev
+# 注意：MiniMessage 消息中的 '(单引号) 符号请添加一个 '，即换为 ''(两个单引号) 进行转移，否则插件可能无法正确进行解析
 storage:
   gui:
-    title: '&x&1&8&1&8&2&5&l云端存储'
+    title: '<color:#181825>云端存储</color>'
     # 配置存储界面的标题
     rows: 6
     # 存储界面的行数，默认为6行，也就是最大54格
-  takeoutOnly: false
+  takeoutOnly: true
   # false代表允许放入和取出，true代表只允许取出，不允许放入
 messages:
-  noPermission: '&x&f&3&8&b&a&8你没有权限执行此命令！'
-  reload: '&x&a&6&e&3&a&1BloraStorage 已重载！'
-  againstTakeoutOnly: '&x&f&3&8&b&a&8你不能将物品放入存储界面！'
+  noPermission: '<color:#f38ba8>你没有权限执行此命令！</color>'
+  reload: '<color:#f38ba8>BloraStorage 已重载！</color>'
+  againstTakeoutOnly: '<color:#f38ba8>不能将物品放入存储界面！</color>'

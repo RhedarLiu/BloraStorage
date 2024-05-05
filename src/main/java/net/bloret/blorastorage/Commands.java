@@ -1,6 +1,8 @@
 package net.bloret.blorastorage;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,23 +14,26 @@ import java.util.List;
 
 public class Commands implements CommandExecutor, TabCompleter {
     private final BloraStorage plugin;
-    private static String reloadMsg;
-    private static String noPermissionMsg;
+    private static Component reloadMsg;
+    private static Component noPermissionMsg;
+    private static final MiniMessage mm = MiniMessage.miniMessage();
+
 
     public Commands(BloraStorage plugin) {
         this.plugin = plugin;
     }
 
     public static void setReloadMsg(String msg) {
-        reloadMsg = ChatColor.translateAlternateColorCodes('&', msg);
+        reloadMsg = mm.deserialize(msg);
     }
 
     public static void setNoPermissionMsg(String msg) {
-        noPermissionMsg = ChatColor.translateAlternateColorCodes('&', msg);
+        noPermissionMsg = mm.deserialize(msg);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        Audience audience = (Audience) sender;
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("open")) {
                 if (!(sender instanceof Player)) {
@@ -42,10 +47,10 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if (sender.hasPermission("blorastorage.reload")) {
                     plugin.reloadConfig();
                     BloraStorage.getInstance().loadConfig();
-                    sender.sendMessage(reloadMsg);
+                    audience.sendMessage(reloadMsg);
                     return true;
                 } else {
-                    sender.sendMessage(noPermissionMsg);
+                    audience.sendMessage(noPermissionMsg);
                     return true;
                 }
             }
