@@ -12,12 +12,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Base64;
 
 public class DatabaseHandler {
@@ -140,15 +135,23 @@ public class DatabaseHandler {
     }
 
     public static void updateDatabaseStructure() {
-        try (Statement statement = connection.createStatement()) {
-            // 添加 item_meta 字段到 player_storage 表中
-            String sql = "ALTER TABLE player_storage ADD COLUMN item_meta TEXT AFTER amount";
-            statement.executeUpdate(sql);
-            connection.commit();
+        try {
+            DatabaseMetaData dbMetaData = connection.getMetaData();
+            ResultSet rs = dbMetaData.getColumns(null, null, "player_storage", "item_meta");
+            if (!rs.next()) { // 列不存在
+                try (Statement statement = connection.createStatement()) {
+                    // 添加 item_meta 字段到 player_storage 表中
+                    String sql = "ALTER TABLE player_storage ADD COLUMN item_meta TEXT AFTER amount";
+                    statement.executeUpdate(sql);
+                    connection.commit();
+                }
+            }
+            rs.close();
         } catch (SQLException e) {
             handleSQLException(e);
         }
     }
+
 
     private static void rollbackTransaction() {
         try {

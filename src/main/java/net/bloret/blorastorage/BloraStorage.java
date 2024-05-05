@@ -55,11 +55,11 @@ public final class BloraStorage extends JavaPlugin {
         StorageGUI.setStorageRows(storageRows);
 
         // 消息相关配置
-        String reloadMsg = config.getString("messages.reload", "&x&a&6&e&3&a&1BloraStorage 已重载！");
+        String reloadMsg = config.getString("messages.reload", "<color:#f38ba8>BloraStorage 已重载！</color>");
         Commands.setReloadMsg(reloadMsg);
-        String noPermissionMsg = config.getString("messages.noPermission", "&x&f&3&8&b&a&8你没有权限执行此命令！");
+        String noPermissionMsg = config.getString("messages.noPermission", "<color:#f38ba8>你没有权限执行此命令！</color>");
         Commands.setNoPermissionMsg(noPermissionMsg);
-        String againstTakeoutOnlyMsg = config.getString("messages.againstTakeoutOnly", "&x&a&6&e&3&a&1你不能将物品放入存储界面！");
+        String againstTakeoutOnlyMsg = config.getString("messages.againstTakeoutOnly", "<color:#f38ba8>你不能将物品放入存储界面！</color>");
         StorageGUI.setAgainstTakeoutOnlyMsg(againstTakeoutOnlyMsg);
     }
 }

@@ -20,4 +20,4 @@ storage:
 messages:
   noPermission: '<color:#f38ba8>你没有权限执行此命令！</color>'
   reload: '<color:#f38ba8>BloraStorage 已重载！</color>'
-  againstTakeoutOnly: '<color:#f38ba8>不能将物品放入存储界面！</color>'
+  againstTakeoutOnly: '<color:#f38ba8>你不能将物品放入存储界面！</color>'
