@@ -17,8 +17,6 @@ public final class BloraStorage extends JavaPlugin {
         this.getCommand("blorastorage").setExecutor(new Commands(this));
         this.getCommand("blorastorage").setTabCompleter(new Commands(this));
 
-        // 确保数据库结构是最新的
-        DatabaseHandler.updateDatabaseStructure();
     }
 
     @Override
@@ -45,6 +43,7 @@ public final class BloraStorage extends JavaPlugin {
         String username = config.getString("database.username");
         String password = config.getString("database.password");
         DatabaseHandler.initializeDatabase(host, port, database, username, password);
+        DatabaseHandler.updateDatabaseStructure();
 
         // 存储箱相关配置
         int storageRows = config.getInt("storage.gui.rows", 6);

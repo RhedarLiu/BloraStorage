@@ -27,7 +27,6 @@ public class DatabaseHandler {
             connection = DriverManager.getConnection(url, username, password);
             connection.setAutoCommit(false);
 
-            // 创建表结构或更新数据库结构
             createOrUpdateTables();
             connection.commit();
         } catch (SQLException e) {
@@ -35,7 +34,6 @@ public class DatabaseHandler {
         }
     }
 
-    // 创建或更新数据库表结构
     private static void createOrUpdateTables() throws SQLException {
         String sqlPlayerStorage = "CREATE TABLE IF NOT EXISTS player_storage (" +
                 "player_id VARCHAR(36) NOT NULL," +
@@ -47,6 +45,23 @@ public class DatabaseHandler {
                 ");";
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sqlPlayerStorage);
+        }
+    }
+
+    public static void updateDatabaseStructure() {
+        try {
+            DatabaseMetaData dbMetaData = connection.getMetaData();
+            ResultSet rs = dbMetaData.getColumns(null, null, "player_storage", "item_meta");
+            if (!rs.next()) {
+                try (Statement statement = connection.createStatement()) {
+                    String sql = "ALTER TABLE player_storage ADD COLUMN item_meta TEXT AFTER amount";
+                    statement.executeUpdate(sql);
+                    connection.commit();
+                }
+            }
+            rs.close();
+        } catch (SQLException e) {
+            handleSQLException(e);
         }
     }
 
@@ -134,23 +149,6 @@ public class DatabaseHandler {
         return inventory;
     }
 
-    public static void updateDatabaseStructure() {
-        try {
-            DatabaseMetaData dbMetaData = connection.getMetaData();
-            ResultSet rs = dbMetaData.getColumns(null, null, "player_storage", "item_meta");
-            if (!rs.next()) { // 列不存在
-                try (Statement statement = connection.createStatement()) {
-                    // 添加 item_meta 字段到 player_storage 表中
-                    String sql = "ALTER TABLE player_storage ADD COLUMN item_meta TEXT AFTER amount";
-                    statement.executeUpdate(sql);
-                    connection.commit();
-                }
-            }
-            rs.close();
-        } catch (SQLException e) {
-            handleSQLException(e);
-        }
-    }
 
 
     private static void rollbackTransaction() {

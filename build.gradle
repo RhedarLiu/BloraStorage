@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'net.bloret'
-version = 'R2.1.6'
+version = '3.0.0'
 
 repositories {
     mavenCentral()
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT"
     implementation 'mysql:mysql-connector-java:8.0.33'
     implementation "net.kyori:adventure-text-minimessage:4.16.0"
     implementation "net.kyori:adventure-text-serializer-legacy:4.16.0"

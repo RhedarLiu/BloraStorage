@@ -108,8 +108,7 @@ public class StorageGUI implements Listener {
 
         if (!(event.getWhoClicked() instanceof Player)) return;
 
-//        Player player = (Player) event.getWhoClicked();
-        Audience audience = (Audience)  event.getWhoClicked();
+        Audience audience = (Audience) event.getWhoClicked();
 
         int inventorySize = event.getView().getTopInventory().getSize();
 

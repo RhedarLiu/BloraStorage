@@ -11,7 +11,7 @@ database:
 # 注意：MiniMessage 消息中的 '(单引号) 符号请添加一个 '，即换为 ''(两个单引号) 进行转移，否则插件可能无法正确进行解析
 storage:
   gui:
-    title: '<color:#181825>云端存储</color>'
+    title: '<color:#181825><bold>云端存储</bold></color>'
     # 配置存储界面的标题
     rows: 6
     # 存储界面的行数，默认为6行，也就是最大54格
