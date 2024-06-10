@@ -1,5 +1,5 @@
 database:
-  # 配置数据库连接，目前仅支持 MySQL 和 MariaDB，其他数据库尚无计划支持
+  # 配置数据库连接，目前仅支持 MySQL 和 MariaDB，暂无计划支持其他数据库
   host: "localhost"
   port: 3306
   database: "blorastorage"

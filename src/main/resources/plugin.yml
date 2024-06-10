@@ -9,4 +9,4 @@ commands:
   blorastorage:
     description: Access your personal storage
     usage: /blorastorage <args>
-    aliases: [bs]
+    aliases: [bst]

@@ -24,12 +24,8 @@ public class StorageGUI implements Listener {
     private static Component againstTakeoutOnlyMsg;
     private static final MiniMessage mm = MiniMessage.miniMessage();
 
-//    public static void setAgainstTakeoutOnlyMsg(String msg) {
-//        againstTakeoutOnlyMsg = ChatColor.translateAlternateColorCodes('&', msg);
-//    }
     public static void setAgainstTakeoutOnlyMsg(String msg) {
         againstTakeoutOnlyMsg = mm.deserialize(msg);
-//        againstTakeoutOnlyMsg = ChatColor.translateAlternateColorCodes('&', msg);
     }
 
     public static void setupGuiTitle(String title) {
