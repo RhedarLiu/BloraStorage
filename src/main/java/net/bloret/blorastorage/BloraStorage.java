@@ -3,6 +3,8 @@ package net.bloret.blorastorage;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.Objects;
+
 public final class BloraStorage extends JavaPlugin {
     private static BloraStorage instance;
 
@@ -14,8 +16,8 @@ public final class BloraStorage extends JavaPlugin {
         StorageGUI.registerEvents(this);
 
         // 设置命令相关
-        this.getCommand("blorastorage").setExecutor(new Commands(this));
-        this.getCommand("blorastorage").setTabCompleter(new Commands(this));
+        Objects.requireNonNull(this.getCommand("blorastorage")).setExecutor(new Commands(this));
+        Objects.requireNonNull(this.getCommand("blorastorage")).setTabCompleter(new Commands(this));
 
     }
 

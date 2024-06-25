@@ -36,11 +36,10 @@ public class Commands implements CommandExecutor, TabCompleter {
         Audience audience = (Audience) sender;
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("open")) {
-                if (!(sender instanceof Player)) {
+                if (!(sender instanceof Player player)) {
                     sender.sendMessage("Only players can use this command.");
                     return true;
                 }
-                Player player = (Player) sender;
                 StorageGUI.openPlayerStorage(player);
                 return true;
             } else if (args[0].equalsIgnoreCase("reload")) {
@@ -48,11 +47,10 @@ public class Commands implements CommandExecutor, TabCompleter {
                     plugin.reloadConfig();
                     BloraStorage.getInstance().loadConfig();
                     audience.sendMessage(reloadMsg);
-                    return true;
                 } else {
                     audience.sendMessage(noPermissionMsg);
-                    return true;
                 }
+                return true;
             }
         }
         sender.sendMessage("Usage: /" + label + " [open|reload]");
