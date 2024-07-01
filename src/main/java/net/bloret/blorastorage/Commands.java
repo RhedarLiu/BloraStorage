@@ -33,7 +33,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, String label, String[] args) {
         Audience audience = (Audience) sender;
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("open")) {
