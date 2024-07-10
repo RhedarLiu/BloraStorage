@@ -61,9 +61,8 @@ public class StorageGUI implements Listener {
 
         if (!event.getView().getTitle().equals(LegacyComponentSerializer.legacySection().serialize(guiTitle))) return;
 
-        if (!(event.getWhoClicked() instanceof Player)) return;
+        if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        Player player = (Player) event.getWhoClicked();
         Audience audience = (Audience) event.getWhoClicked();
 
 
