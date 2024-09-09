@@ -65,7 +65,6 @@ public class StorageGUI implements Listener {
 
         Audience audience = (Audience) event.getWhoClicked();
 
-
         InventoryAction action = event.getAction();
         boolean isTopInventory = event.getRawSlot() < event.getView().getTopInventory().getSize();
 

@@ -1,6 +1,5 @@
 package net.bloret.blorastorage;
 
-import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
