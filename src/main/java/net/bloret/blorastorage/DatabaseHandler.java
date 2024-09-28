@@ -26,7 +26,6 @@ public class DatabaseHandler {
             String url = String.format("jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC", host, port, database);
             connection = DriverManager.getConnection(url, username, password);
             connection.setAutoCommit(false);
-
             createOrUpdateTables();
             connection.commit();
         } catch (SQLException e) {
