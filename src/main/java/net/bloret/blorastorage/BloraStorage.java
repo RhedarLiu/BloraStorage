@@ -12,10 +12,8 @@ public final class BloraStorage extends JavaPlugin {
     public void onEnable() {
         instance = this;
         loadConfig();
-        // 注册 StorageGUI 事件监听器
         StorageGUI.registerEvents(this);
 
-        // 设置命令相关
         Objects.requireNonNull(this.getCommand("blorastorage")).setExecutor(new Commands(this));
         Objects.requireNonNull(this.getCommand("blorastorage")).setTabCompleter(new Commands(this));
 
@@ -33,9 +31,7 @@ public final class BloraStorage extends JavaPlugin {
 
     public void loadConfig() {
         instance = this;
-        this.saveDefaultConfig();  // 保存默认配置文件（如果尚不存在）
-
-        // 从config.yml读取数据库配置
+        this.saveDefaultConfig();
         FileConfiguration config = this.getConfig();
 
         // 数据库相关配置
@@ -49,7 +45,7 @@ public final class BloraStorage extends JavaPlugin {
 
         // 存储箱相关配置
         int storageRows = config.getInt("storage.gui.rows", 6);
-        String guiTitle = config.getString("storage.gui.title", "&x&1&8&1&8&2&5&l云端存储");
+        String guiTitle = config.getString("storage.gui.title", "<color:#181825><bold>云端存储</bold></color>");
         boolean takeoutOnly = config.getBoolean("storage.takeoutOnly", false);
         StorageGUI.setupGuiTitle(guiTitle);
         StorageGUI.setTakeoutOnly(takeoutOnly);

@@ -33,7 +33,7 @@ public class DatabaseHandler {
         }
     }
 
-    private static void createOrUpdateTables() throws SQLException {
+    private static void createOrUpdateTables() {
         String sqlPlayerStorage = "CREATE TABLE IF NOT EXISTS player_storage (" +
                 "player_id VARCHAR(36) NOT NULL," +
                 "slot INT NOT NULL," +
@@ -44,6 +44,8 @@ public class DatabaseHandler {
                 ");";
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sqlPlayerStorage);
+        } catch (SQLException e) {
+            handleSQLException(e);
         }
     }
 
@@ -95,25 +97,6 @@ public class DatabaseHandler {
                 }
             }
             psReplace.executeBatch();
-            psDelete.executeBatch();
-            connection.commit();
-        } catch (SQLException e) {
-            rollbackTransaction();
-            handleSQLException(e);
-        }
-    }
-
-    public static void removeItemsNotInInventory(Player player, Inventory inventory) {
-        String sqlDelete = "DELETE FROM player_storage WHERE player_id = ? AND slot = ?";
-        try (PreparedStatement psDelete = connection.prepareStatement(sqlDelete)) {
-            for (int i = 0; i < StorageGUI.getStorageRows() * 9; i++) {
-                ItemStack item = inventory.getItem(i);
-                if (item == null || item.getType() == Material.AIR) {
-                    psDelete.setString(1, player.getUniqueId().toString());
-                    psDelete.setInt(2, i);
-                    psDelete.addBatch();
-                }
-            }
             psDelete.executeBatch();
             connection.commit();
         } catch (SQLException e) {

@@ -36,7 +36,6 @@ public class StorageGUI implements Listener {
         takeoutOnly = takeoutOnlyStatus;
     }
 
-
     public static void setStorageRows(int rows) {
         storageRows = rows;
     }
