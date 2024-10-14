@@ -5,11 +5,11 @@ database:
   database: "blorastorage"
   username: "blorastorage"
   password: "password"
+
 # 消息请使用 MiniMessage 格式，以更方便地配置更多颜色和格式的信息
 # MiniMessage 官方 Wiki：https://docs.advntr.dev/minimessage/format.html
 # MiniMessage 格式官方生成器：https://webui.advntr.dev
-# 注意：MiniMessage 消息中的 '(单引号) 符号请添加一个 '，即换为 ''(两个单引号) 进行转移，否则插件可能无法正确进行解析
-
+# 注意：文本中的 '(单引号) 符号请添加一个 '，即换为 ''(两个单引号) 进行转义，否则插件可能无法正确进行解析
 storage:
   gui:
     title: '<color:#181825><bold>云端存储</bold></color>'

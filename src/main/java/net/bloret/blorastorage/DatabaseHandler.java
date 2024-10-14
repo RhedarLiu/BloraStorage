@@ -19,10 +19,8 @@ public class DatabaseHandler {
     private static Connection connection;
 
     public static void initializeDatabase(String host, int port, String database, String username, String password) {
+        if (connection != null) return;
         try {
-            if (connection != null && !connection.isClosed()) {
-                return;
-            }
             String url = String.format("jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC", host, port, database);
             connection = DriverManager.getConnection(url, username, password);
             connection.setAutoCommit(false);
@@ -42,25 +40,19 @@ public class DatabaseHandler {
                 "item_meta TEXT," +
                 "PRIMARY KEY (player_id, slot)" +
                 ");";
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sqlPlayerStorage);
-        } catch (SQLException e) {
-            handleSQLException(e);
-        }
+        executeUpdate(sqlPlayerStorage);
     }
 
     public static void updateDatabaseStructure() {
         try {
             DatabaseMetaData dbMetaData = connection.getMetaData();
-            ResultSet rs = dbMetaData.getColumns(null, null, "player_storage", "item_meta");
-            if (!rs.next()) {
-                try (Statement statement = connection.createStatement()) {
+            try (ResultSet rs = dbMetaData.getColumns(null, null, "player_storage", "item_meta")) {
+                if (!rs.next()) {
                     String sql = "ALTER TABLE player_storage ADD COLUMN item_meta TEXT AFTER amount";
-                    statement.executeUpdate(sql);
+                    executeUpdate(sql);
                     connection.commit();
                 }
             }
-            rs.close();
         } catch (SQLException e) {
             handleSQLException(e);
         }
@@ -84,11 +76,7 @@ public class DatabaseHandler {
             for (int i = 0; i < inventory.getSize(); i++) {
                 ItemStack item = inventory.getItem(i);
                 if (item != null && item.getType() != Material.AIR) {
-                    psReplace.setString(1, player.getUniqueId().toString());
-                    psReplace.setInt(2, i);
-                    psReplace.setString(3, item.getType().name());
-                    psReplace.setInt(4, item.getAmount());
-                    psReplace.setString(5, itemStackToBase64(item));
+                    prepareStatement(psReplace, player, i, item);
                     psReplace.addBatch();
                 } else {
                     psDelete.setString(1, player.getUniqueId().toString());
@@ -103,6 +91,14 @@ public class DatabaseHandler {
             rollbackTransaction();
             handleSQLException(e);
         }
+    }
+
+    private static void prepareStatement(PreparedStatement ps, Player player, int slot, ItemStack item) throws SQLException {
+        ps.setString(1, player.getUniqueId().toString());
+        ps.setInt(2, slot);
+        ps.setString(3, item.getType().name());
+        ps.setInt(4, item.getAmount());
+        ps.setString(5, itemStackToBase64(item));
     }
 
     public static Inventory loadItems(Player player) {
@@ -131,15 +127,13 @@ public class DatabaseHandler {
         return inventory;
     }
 
-
-
     private static void rollbackTransaction() {
         try {
             if (connection != null) {
                 connection.rollback();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            handleSQLException(e);
         }
     }
 
@@ -148,12 +142,18 @@ public class DatabaseHandler {
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Database error: " + e.getMessage());
     }
 
-    public static String itemStackToBase64(ItemStack item) throws IllegalStateException {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            try (BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
-                dataOutput.writeObject(item);
-            }
+    private static void executeUpdate(String sql) {
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
+    public static String itemStackToBase64(ItemStack item) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
+            dataOutput.writeObject(item);
             return Base64.getEncoder().encodeToString(outputStream.toByteArray());
         } catch (Exception e) {
             throw new IllegalStateException("Unable to save item stack.", e);
@@ -161,11 +161,9 @@ public class DatabaseHandler {
     }
 
     public static ItemStack itemStackFromBase64(String data) throws IOException {
-        try {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));
-            try (BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
-                return (ItemStack) dataInput.readObject();
-            }
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));
+             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
+            return (ItemStack) dataInput.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException("Unable to decode class type.", e);
         }
