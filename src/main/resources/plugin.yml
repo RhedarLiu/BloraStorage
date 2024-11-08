@@ -1,7 +1,7 @@
 name: BloraStorage
 version: '${version}'
 main: net.bloret.blorastorage.BloraStorage
-api-version: '1.20'
+api-version: '1.18'
 authors: [Rhedar]
 description: A Minecraft plugin that can create a storage connected to MySQL databases for players to pass items between servers.
 website: https://www.bloret.net
